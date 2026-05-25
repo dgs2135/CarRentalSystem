@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Testimonials</h2>
+    <div class="text-left mt-3">
+        <a href="{% url 'post_testimonial' %}" class="btn btn-primary" style="font-weight: bold;">+ Post Testimonial</a>
+    </div>
+    <br />
+    {% for testimonial in testimonials %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                    {% if testimonial.user.profile.profile_picture %}
+                        <img src="{{ testimonial.user.profile.profile_picture.url }}" class="rounded-circle mr-3" width="50" height="50" alt="Profile picture">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary mr-3" style="width: 50px; height: 50px;"></div>
+                    {% endif %}
+                    <div>
+                        <p class="card-text">{{ testimonial.content }}</p>
+                        <p class="card-text"><small class="text-muted">By {{ testimonial.user.username }} on {{ testimonial.created_at }}</small></p>
+                    </div>
+                </div>
+                {% if testimonial.image %}
+                    <div class="mt-3">
+                        <img src="{{ testimonial.image.url }}" class="img-fluid rounded" alt="Testimonial image" style="max-height: 300px; object-fit: cover;">
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">No testimonials yet. Be the first to post one!</p>
+    {% endfor %}
+{% endblock %}

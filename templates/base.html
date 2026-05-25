@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECR Electric Car Rental</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v={% now 'U' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-lightblue">
+        <a class="navbar-brand" href="{% url 'home' %}"><img src="/static/images/ECR.svg" style="height:5vh" /></a>
+        <div class="navbar-nav">
+            <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
+            <a class="nav-item nav-link" href="{% url 'contact' %}">Contact</a>
+            {% if user.is_authenticated %}
+                <a class="nav-item nav-link" href="{% url 'car_booking' %}">Book Car</a>
+                <a class="nav-item nav-link" href="{% url 'booking_history' %}">My Bookings</a>
+                <a class="nav-item nav-link" href="{% url 'testimonials' %}">Testimonials</a>
+                <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+                {% if user.is_superuser %}
+                    <a class="nav-item nav-link" href="{% url 'dashboard' %}">Admin Dashboard</a>
+                {% endif %}
+                <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+    <div style="font-weight: bold;">
+        <center>
+            <hr />
+            <img src="/static/images/ECR.svg" style="height:3rem; margin-bottom: 0.5rem;" />
+            <br />
+            &copy; 2025 Aptech Qatar. All Rights Reserved
+        </center>
+    </div>
+    <footer style="position: fixed; bottom: 0; right: 0; padding: 10px; background-color: black; border-radius: 10px 0 0 0;">
+        <div class="text-right">
+            <a href="https://www.facebook.com/MaxVerstappen" target="_blank"><img src="/static/images/facebook.svg" alt="Facebook" class="contact-icons" style="filter: invert(70%) sepia(75%) saturate(500%); transition: all 0.3s ease;" 
+                onmouseover="this.style.filter='invert(100%)'" onmouseout="this.style.filter='invert(70%) sepia(75%) saturate(500%)'"></a>
+            <a href="https://x.com/ECarsReport" target="_blank"><img src="/static/images/twitter.svg" alt="Twitter" class="contact-icons" style="filter: invert(70%) sepia(75%) saturate(500%); transition: all 0.3s ease;" 
+                onmouseover="this.style.filter='invert(100%)'" onmouseout="this.style.filter='invert(70%) sepia(75%) saturate(500%)'"></a>
+            <a href="https://www.instagram.com/pixarcars/" target="_blank"><img src="/static/images/instagram.svg" alt="Instagram" class="contact-icons" style="filter: invert(70%) sepia(75%) saturate(500%); transition: all 0.3s ease;" 
+                onmouseover="this.style.filter='invert(100%)'" onmouseout="this.style.filter='invert(70%) sepia(75%) saturate(500%)'"></a>
+            <a href="https://www.youtube.com/watch?v=oaEM4JYFPfw" target="_blank"><img src="/static/images/youtube.svg" alt="YouTube" class="contact-icons" style="filter: invert(70%) sepia(75%) saturate(500%); transition: all 0.3s ease;" 
+                onmouseover="this.style.filter='invert(100%)'" onmouseout="this.style.filter='invert(70%) sepia(75%) saturate(500%)'"></a>
+        </div>
+    </footer>   
+</body>
+</html>

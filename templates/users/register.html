@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-3">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card">
+        <div class="card-body p-4">
+          <h2 class="mb-4">Register</h2>
+          <p>Already Registered? Click <a href="{% url 'login' %}">Here</a> to Login.</p>
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+form p { margin-bottom: 1rem; }
+form label { display: inline-block; width: 140px; }
+form input { width: 50%; }
+form .helptext { color: #6c757d; display: block; size: small; }
+form .errortext  { color: #6c757d; display: block; size: small; }
+</style>
+{% endblock %}

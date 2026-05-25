@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-3">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="mb-4">Book a Car</h2>
+          <form method="post">
+            {% csrf_token %}
+            <div id="car-selection-container">
+              <div class="car-selection">
+                <div class="form-group mb-2">
+                  <label for="brand">Brand</label>
+                  <select name="brand_id[]" class="form-control" required>
+                    <option value="" selected disabled>Select Brand</option>
+                    {% for brand in brands %}
+                      <option value="{{ brand.id }}">{{ brand.name|escape }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group mb-2">
+                  <label for="model">Model</label>
+                  <select name="vehicle_id[]" class="form-control" required disabled>
+                    <option value="" selected disabled>Select Model</option>
+                  </select>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <label for="start_date">Start Date</label>
+                    <input type="date" name="start_date[]" class="form-control" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="end_date">End Date</label>
+                    <input type="date" name="end_date[]" class="form-control" required>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" id="add-car" class="btn btn-secondary mb-2">Add Another Car</button>
+            <div class="form-group mb-2">
+              <input
+                type="text"
+                id="subtotal"
+                class="form-control w-50 py-1 font-weight-bold bg-transparent border-0 text-dark"
+                placeholder="Subtotal:"
+                readonly
+              >
+            </div>
+            <button type="submit" class="btn btn-primary">Book</button>
+          </form>
+
+          <div id="vehicle-data" style="display:none;">
+            {% for vehicle in vehicles %}
+            <div data-brand="{{ vehicle.brand.id }}" data-id="{{ vehicle.id }}" data-model="{{ vehicle.model|force_escape }}" data-price="{{ vehicle.price_per_day }}"></div>
+            {% endfor %}
+          </div>
+
+          <script>
+            document.addEventListener('DOMContentLoaded', () => {
+              const addCarButton = document.getElementById('add-car');
+              const carSelectionContainer = document.getElementById('car-selection-container');
+              const subtotal = document.getElementById('subtotal');
+
+              const vehicles = {};
+              const brandNameToId = {};
+              document.querySelectorAll('#vehicle-data div').forEach(el => {
+                (vehicles[el.dataset.brand] ||= []).push({
+                  id: el.dataset.id,
+                  model: el.dataset.model,
+                  price: parseFloat(el.dataset.price)
+                });
+              });
+
+              // Build brandNameToId map from brands select options
+              document.querySelectorAll('select[name="brand_id[]"] option').forEach(option => {
+                if (option.value) {
+                  brandNameToId[option.textContent.trim().toLowerCase()] = option.value;
+                }
+              });
+
+              const calculateSubtotal = () => {
+                let total = 0;
+                document.querySelectorAll('.car-selection').forEach(selection => {
+                  const brand = selection.querySelector('select[name="brand_id[]"]').value;
+                  const model = selection.querySelector('select[name="vehicle_id[]"]').value;
+                  const startDate = selection.querySelector('input[name="start_date[]"]').value;
+                  const endDate = selection.querySelector('input[name="end_date[]"]').value;
+
+                  const selectedVehicle = vehicles[brand]?.find(v => v.id === model);
+                  if (selectedVehicle && startDate && endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    const days = (end - start) / (1000 * 60 * 60 * 24);
+                    if (days > 0) {
+                      total += days * selectedVehicle.price;
+                    }
+                  }
+                });
+                subtotal.value = `Subtotal: $${total.toFixed(2)}`;
+              };
+
+              const resetModelSelect = (modelSelect) => {
+                modelSelect.innerHTML = '<option value="" selected disabled>Select Model</option>';
+                modelSelect.disabled = true;
+              };
+
+              addCarButton.addEventListener('click', () => {
+                const newCarSelection = document.querySelector('.car-selection').cloneNode(true);
+                newCarSelection.querySelector('select[name="brand_id[]"]').value = '';
+                resetModelSelect(newCarSelection.querySelector('select[name="vehicle_id[]"]'));
+                newCarSelection.querySelector('input[name="start_date[]"]').value = '';
+                newCarSelection.querySelector('input[name="end_date[]"]').value = '';
+                carSelectionContainer.appendChild(newCarSelection);
+              });
+
+              carSelectionContainer.addEventListener('change', (event) => {
+                const target = event.target;
+                const carSelection = target.closest('.car-selection');
+
+                if (target.name === 'brand_id[]') {
+                  const modelSelect = carSelection.querySelector('select[name="vehicle_id[]"]');
+                  resetModelSelect(modelSelect);
+                  const selectedBrand = target.value;
+                  if (vehicles[selectedBrand]) {
+                    modelSelect.disabled = false;
+                    modelSelect.innerHTML = '<option value="" selected disabled>Select Model</option>';
+                    vehicles[selectedBrand].forEach(v => {
+                      modelSelect.add(new Option(v.model, v.id));
+                    });
+                  }
+                }
+
+                if (['brand_id[]', 'vehicle_id[]', 'start_date[]', 'end_date[]'].includes(target.name)) {
+                  calculateSubtotal();
+                }
+              });
+
+              calculateSubtotal();
+
+              const setMinDateForInputs = (container) => {
+                const today = new Date().toISOString().split('T')[0];
+                container.querySelectorAll('input[name="start_date[]"], input[name="end_date[]"]').forEach(input => {
+                  input.min = today;
+                });
+              };
+
+              // Call this function on page load and when adding new car selections
+              setMinDateForInputs(carSelectionContainer);
+            });
+          </script>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  select.form-control {
+    line-height: 1.5;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+  }
+</style>
+{% endblock %}

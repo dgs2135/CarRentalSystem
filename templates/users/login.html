@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-3">
+    <div class="card mx-auto" style="max-width: 400px;">
+        <div class="card-body p-4">
+            <h2 class="text-center mb-4">Login</h2>
+            <form method="post">
+                <p>New User? Click <a href="{% url 'register' %}" style="font-weight: bold;">Here</a> to Register.</p>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input type="text" name="username" class="form-control" placeholder="Username" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
+                <a href="{% url 'recover_password' %}" class="d-block text-center">Forgot Password?</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

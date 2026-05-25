@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body p-4">
+            <h2 class="mb-4">Profile</h2>
+            <div class="text-center mb-4">
+                {% if profile.profile_picture %}
+                    <img src="{{ profile.profile_picture.url }}" class="rounded-circle" width="150" height="150">
+                {% else %}
+                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                        <span class="text-white">{{ user.username|first|upper }}</span>
+                    </div>
+                {% endif %}
+            </div>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Full Name:</strong> {{ profile.full_name }}</p>
+            <p><strong>Phone:</strong> {{ profile.phone }}</p>
+            <div class="mt-4">
+                <a href="{% url 'change_password' %}" class="btn btn-primary mr-2">Change Password</a>
+                <a href="{% url 'update_profile' %}" class="btn btn-primary mr-2">Update Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

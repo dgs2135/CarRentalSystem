@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <center>
+        <img src="/static/images/ECR.svg" style="height:15vh" />
+    </center>
+    <br />
+    <h1>Welcome to ECR Electric Car Rental</h1>
+    <br />
+
+    <!-- Controls for filtering, sorting, search, and view toggle -->
+    <div class="controls mb-3">
+        <input type="text" id="searchInput" placeholder="Search cars..." class="form-control mb-2" />
+
+        <div class="filters-row d-flex flex-wrap align-items-center gap-2 mb-2 justify-content-between">
+            <button id="resetFiltersBtn" class="btn btn-danger me-3">Reset</button>
+
+            <div class="filter-selects d-flex flex-wrap gap-2 flex-grow-1 justify-content-center">
+                <select id="brandFilter" class="form-control filter-select">
+                    <option value="all">All Brands</option>
+                    {% for brand in brands %}
+                        <option value="{{ brand.name|lower }}">{{ brand.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="descFilter" class="form-control filter-select">
+                    <option value="all">All Descriptions</option>
+                    {% for desc in descriptions %}
+                        <option value="{{ desc|lower }}">{{ desc }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="sortSelect" class="form-control filter-select">
+                    <option value="alphabetical">Alphabetical</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                </select>
+            </div>
+
+            <button id="toggleViewBtn" class="btn btn-secondary ms-3">Switch to List View</button>
+        </div>
+    </div>
+
+    <!-- Vehicles container -->
+    <div id="vehiclesContainer" class="grid-view">
+        {% for vehicle in vehicles %}
+        <div class="card vehicle-card mb-3" data-brand="{{ vehicle.brand.name|lower }}" data-description="{{ vehicle.description|lower }}" data-model="{{ vehicle.model|lower }}" data-price="{{ vehicle.price_per_day }}" data-brand-id="{{ vehicle.brand.id }}" data-id="{{ vehicle.id }}">
+                <img src="{% static 'images/Car Images/' %}{{ vehicle.model }}.png" alt="{{ vehicle.model }}" class="card-img-top vehicle-image" />
+                <div class="card-body">
+                    <h5 class="card-title">{{ vehicle.brand.name }} {{ vehicle.model }}</h5>
+                    <p class="card-text">{{ vehicle.description }}</p>
+                    <p><strong>Price:</strong> ${{ vehicle.price_per_day }}/day</p>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'car_booking' %}" class="btn btn-primary">Book Now</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No vehicles available.</p>
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'js/home.js' %}"></script>
+{% endblock %}
